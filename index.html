@@ -792,13 +792,23 @@ function loginWithGoogle() {
   err.style.display = 'none';
 
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(e => {
+  // Use redirect instead of popup - works better on mobile
+  auth.signInWithRedirect(provider).catch(e => {
     btn.style.display = 'flex';
     loading.style.display = 'none';
     err.textContent = 'Error: ' + e.message;
     err.style.display = 'block';
   });
 }
+
+// Handle redirect result on page load
+auth.getRedirectResult().then(result => {
+  if (result && result.user) {
+    console.log('Login via redirect OK:', result.user.email);
+  }
+}).catch(e => {
+  console.warn('Redirect result error:', e.message);
+});
 
 function logoutUser() {
   auth.signOut();
