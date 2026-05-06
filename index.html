@@ -471,6 +471,9 @@
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
       Iniciar sesión con Google
     </button>
+    <button onclick="loginAnonymous()" style="width:100%;margin-top:10px;background:transparent;color:#7070a0;border:1px solid #2e2e3e;border-radius:12px;padding:12px 20px;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      Entrar sin cuenta (solo este dispositivo)
+    </button>
     <div id="login-error" style="margin-top:14px;font-size:0.78rem;color:#ff6666;display:none;"></div>
     <div id="login-loading" style="margin-top:14px;font-size:0.78rem;color:#7070a0;display:none;">Conectando...</div>
   </div>
@@ -789,29 +792,58 @@ function loginWithGoogle() {
   const err = document.getElementById('login-error');
   btn.style.display = 'none';
   loading.style.display = 'block';
+  loading.textContent = 'Conectando...';
   err.style.display = 'none';
 
   const provider = new firebase.auth.GoogleAuthProvider();
-  // Use redirect instead of popup - works better on mobile
-  auth.signInWithRedirect(provider).catch(e => {
-    btn.style.display = 'flex';
-    loading.style.display = 'none';
-    err.textContent = 'Error: ' + e.message;
-    err.style.display = 'block';
-  });
+  provider.addScope('email');
+  
+  // Try popup first, fall back to redirect
+  auth.signInWithPopup(provider)
+    .then(result => {
+      console.log('Login OK:', result.user.email);
+    })
+    .catch(popupError => {
+      console.warn('Popup failed, trying redirect:', popupError.code);
+      if (popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request') {
+        // Try redirect as fallback
+        auth.signInWithRedirect(provider).catch(e => {
+          btn.style.display = 'flex';
+          loading.style.display = 'none';
+          err.textContent = 'Error: ' + e.message;
+          err.style.display = 'block';
+        });
+      } else {
+        btn.style.display = 'flex';
+        loading.style.display = 'none';
+        err.textContent = 'Error: ' + popupError.message;
+        err.style.display = 'block';
+      }
+    });
 }
 
-// Handle redirect result on page load
+// Handle redirect result
 auth.getRedirectResult().then(result => {
   if (result && result.user) {
-    console.log('Login via redirect OK:', result.user.email);
+    console.log('Redirect login OK:', result.user.email);
   }
 }).catch(e => {
-  console.warn('Redirect result error:', e.message);
+  if (e.code !== 'auth/no-auth-event') {
+    console.warn('Redirect error:', e.message);
+  }
 });
 
 function logoutUser() {
   auth.signOut();
+}
+
+function loginAnonymous() {
+  auth.signInAnonymously().catch(e => {
+    const err = document.getElementById('login-error');
+    if (err) { err.textContent = 'Error: ' + e.message; err.style.display = 'block'; }
+  });
 }
 
 // Auth state listener
