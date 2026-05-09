@@ -733,15 +733,6 @@
 </div>
 
 <!-- Firebase SDK (compat version - works on all browsers) -->
-<!--
-  ⚙️ SETUP REQUERIDO EN FIREBASE CONSOLE:
-  1. Authentication → Settings → Authorized domains → añadir:
-       - tuusuario.github.io
-       - localhost (para desarrollo local)
-  2. Firestore → Rules → asegúrate de tener:
-       allow read, write: if request.auth != null;
-  3. Authentication → Sign-in method → habilitar: Google y Anónimo
--->
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA1iZHd2X0xfNNxtdg8VFPGj0gNJjO7iCI",
@@ -872,6 +863,10 @@ window.saveToFirebase = async function() {
     const data = JSON.parse(JSON.stringify(s));
     delete data.selectedColor;
     delete data.activeFilters;
+    // Firestore no soporta arrays anidados — serializar compatibleRoles como string
+    if (Array.isArray(data.compatibleRoles)) {
+      data.compatibleRoles = JSON.stringify(data.compatibleRoles);
+    }
     await DOC_REF.set(data);
     diagMsg('✅ Guardado en Firebase', '#4ade80');
     setTimeout(hideSync, 1200);
@@ -895,7 +890,13 @@ function mergeRemoteState(remote) {
   if (remote.nextId) state.nextId = remote.nextId;
   if (remote.conflictThreshold) state.conflictThreshold = remote.conflictThreshold;
   if (remote.customRoles) state.customRoles = remote.customRoles;
-  if (remote.compatibleRoles) state.compatibleRoles = remote.compatibleRoles;
+  if (remote.compatibleRoles) {
+    try {
+      state.compatibleRoles = typeof remote.compatibleRoles === 'string'
+        ? JSON.parse(remote.compatibleRoles)
+        : remote.compatibleRoles;
+    } catch(e) { state.compatibleRoles = [['Encargado','Piker']]; }
+  }
   if (remote.theme) { state.theme = remote.theme; if (window.applyTheme) window.applyTheme(); }
   window.state = state;
   localStorage.setItem('vac-app-v3', JSON.stringify(state));
