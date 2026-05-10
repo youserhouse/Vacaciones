@@ -469,6 +469,22 @@
 </head>
 <body>
 
+<!-- Password Screen -->
+<div id="password-screen" style="position:fixed;inset:0;background:#0f0f13;z-index:999999;display:flex;align-items:center;justify-content:center;">
+  <div style="text-align:center;padding:32px;max-width:320px;width:90%;">
+    <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#e8e8f0;margin-bottom:4px;">Mecafilter</div>
+    <div style="font-size:0.82rem;color:#7070a0;margin-bottom:28px;">Introduce la contraseña para acceder</div>
+    <input id="pwd-input" type="password" placeholder="Contraseña..." onkeydown="if(event.key==='Enter')checkPassword()"
+      style="width:100%;background:#1a1a22;border:1px solid #2e2e3e;color:#e8e8f0;padding:12px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;margin-bottom:12px;text-align:center;letter-spacing:2px;">
+    <button onclick="checkPassword()"
+      style="width:100%;background:#f5a623;color:#000;border:none;border-radius:10px;padding:13px;font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;cursor:pointer;">
+      Entrar
+    </button>
+    <div id="pwd-error" style="margin-top:12px;font-size:0.8rem;color:#ff6666;display:none;">❌ Contraseña incorrecta</div>
+  </div>
+</div>
+
 <!-- Splash Screen -->
 <div id="splash-screen" style="position:fixed;inset:0;background:#0f0f13;z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s ease;">
   <div style="position:absolute;width:400px;height:400px;border-radius:50%;border:1px solid rgba(245,166,35,.1);animation:ring 3s linear infinite;top:50%;left:50%;margin-top:-200px;margin-left:-200px;"></div>
@@ -2561,6 +2577,37 @@ function confirmImport() {
   closeModal('import-modal');
   showToast(`✅ ${imported} días importados al calendario`);
   showView('annual');
+}
+
+// ── PASSWORD ──────────────────────────────────────────────────
+(function() {
+  const pwd = document.getElementById('password-screen');
+  if (!pwd) return;
+  // Check if already authenticated in this session
+  if (sessionStorage.getItem('meca-auth') === '1') {
+    pwd.style.display = 'none';
+  }
+})();
+
+function checkPassword() {
+  const input = document.getElementById('pwd-input').value;
+  const error = document.getElementById('pwd-error');
+  if (input === 'Filtros') {
+    sessionStorage.setItem('meca-auth', '1');
+    const pwd = document.getElementById('password-screen');
+    pwd.style.transition = 'opacity .4s ease';
+    pwd.style.opacity = '0';
+    setTimeout(() => { pwd.style.display = 'none'; }, 400);
+    error.style.display = 'none';
+  } else {
+    error.style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+    document.getElementById('pwd-input').style.borderColor = '#ff6666';
+    setTimeout(() => {
+      document.getElementById('pwd-input').style.borderColor = '#2e2e3e';
+    }, 1500);
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────
