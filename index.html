@@ -694,12 +694,26 @@
     <h3>⚙️ Configuración de conflictos</h3>
 
     <div class="form-group">
-      <label>¿Cuántos empleados del mismo puesto generan conflicto?</label>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <button class="thresh-btn" id="thresh-2" onclick="setThreshold(2)">2 empleados</button>
-        <button class="thresh-btn" id="thresh-3" onclick="setThreshold(3)">3 empleados</button>
-      </div>
-      <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;" id="thresh-desc"></div>
+      <label>¿Cuántos empleados del <strong>mismo puesto</strong> generan conflicto?</label>
+      <select id="thresh-same-role" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+        <option value="2">2 o más del mismo puesto</option>
+        <option value="3">3 o más del mismo puesto</option>
+        <option value="4">4 o más del mismo puesto</option>
+        <option value="99">Nunca (desactivar)</option>
+      </select>
+      <div style="font-size:0.74rem;color:var(--muted);margin-top:5px;">Ej: 2 Pikers el mismo día = conflicto</div>
+    </div>
+
+    <div class="form-group" style="margin-top:14px;">
+      <label>¿Cuántos empleados en total (cualquier puesto) generan conflicto?</label>
+      <select id="thresh-total" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+        <option value="99">Nunca (desactivar)</option>
+        <option value="2">2 o más en total</option>
+        <option value="3">3 o más en total</option>
+        <option value="4">4 o más en total</option>
+        <option value="5">5 o más en total</option>
+      </select>
+      <div style="font-size:0.74rem;color:var(--muted);margin-top:5px;">Ej: 3 empleados de cualquier puesto el mismo día = conflicto</div>
     </div>
 
     <div class="form-group" style="margin-top:18px;">
@@ -1003,6 +1017,7 @@ function loadState() {
     selectedColor: COLORS[0],
     activeFilters: ['all'],
     conflictThreshold: 2,        // min employees same role to trigger conflict
+    conflictThresholdTotal: 99,  // min total employees any role to trigger conflict
     customRoles: [],              // user-added roles beyond DEFAULT_ROLES
     compatibleRoles: [['Encargado','Piker']], // pairs that DON'T conflict
   };
@@ -1066,6 +1081,32 @@ function countVacDays(empId, year) {
   let count = 0;
   for (const [k,v] of Object.entries(state.marks)) {
     if (k.startsWith(String(year)) && v[empId]==='V') count++;
+  }
+  return count;
+}
+
+// Count vacation days already taken (past dates only)
+function countPastVacDays(empId, year) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let count = 0;
+  for (const [k,v] of Object.entries(state.marks)) {
+    if (!k.startsWith(String(year)) || v[empId]!=='V') continue;
+    const d = new Date(k);
+    if (d < today) count++;
+  }
+  return count;
+}
+
+// Count vacation days remaining (future dates only)
+function countFutureVacDays(empId, year) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let count = 0;
+  for (const [k,v] of Object.entries(state.marks)) {
+    if (!k.startsWith(String(year)) || v[empId]!=='V') continue;
+    const d = new Date(k);
+    if (d >= today) count++;
   }
   return count;
 }
@@ -1155,22 +1196,38 @@ function renderDashboard() {
 
   // Employee cards
   document.getElementById('employees-grid').innerHTML = emps.map(emp => {
-    const used=countVacDays(emp.id,y);
-    const pct=Math.min(100,Math.round((used/emp.totalDays)*100));
+    const used = countVacDays(emp.id, y);
+    const past = countPastVacDays(emp.id, y);
+    const future = countFutureVacDays(emp.id, y);
+    const notScheduled = emp.totalDays - used;
+    const pct = Math.min(100, Math.round((used/emp.totalDays)*100));
+    const pastPct = Math.min(100, Math.round((past/emp.totalDays)*100));
+    const futurePct = Math.min(100, Math.round((future/emp.totalDays)*100));
+    const textColor = getTextColorForBg(emp.color);
+    const isCurrentYear = y === new Date().getFullYear();
     return `
     <div class="emp-card" style="border-left:4px solid ${emp.color}">
       <div class="emp-header">
-        <div class="emp-dot" style="background:${emp.color}">${initials(emp.name)}</div>
+        <div class="emp-dot" style="background:${emp.color};color:${textColor}">${initials(emp.name)}</div>
         <div><div class="emp-name">${emp.name}</div><div class="emp-role">${emp.role||'—'}${emp.birthday?` · 🎂 ${new Date(emp.birthday).getDate()} ${MONTHS[new Date(emp.birthday).getMonth()].slice(0,3)}`:''}
         </div></div>
       </div>
       <div class="progress-wrap">
-        <div class="progress-label"><span>Vacaciones usadas</span><span>${pct}%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${emp.color}"></div></div>
+        <div class="progress-label"><span>Vacaciones planificadas</span><span>${pct}%</span></div>
+        <div class="progress-bar" style="height:8px;">
+          <div class="progress-fill" style="width:${pastPct}%;background:${emp.color};opacity:0.5;border-radius:99px 0 0 99px;"></div>
+          <div class="progress-fill" style="width:${futurePct}%;background:${emp.color};border-radius:${pastPct===0?'99px':'0'} 99px 99px ${pastPct===0?'99px':'0'};margin-top:-8px;margin-left:${pastPct}%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.7rem;color:var(--muted);">
+          <span>🕐 Disfrutados: <strong style="color:var(--text)">${past}</strong></span>
+          <span>📅 Pendientes: <strong style="color:${emp.color}">${future}</strong></span>
+        </div>
       </div>
-      <div class="days-taken">
-        <strong>${used}</strong> de <strong>${emp.totalDays}</strong> días usados
-        · <strong style="color:${emp.color}">${emp.totalDays-used}</strong> restantes
+      <div class="days-taken" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
+        ${isCurrentYear
+          ? `<strong style="color:${emp.color};font-size:1rem;">${notScheduled}</strong> días sin asignar de <strong>${emp.totalDays}</strong>`
+          : `<strong>${used}</strong> de <strong>${emp.totalDays}</strong> días · <strong style="color:${emp.color}">${emp.totalDays-used}</strong> restantes`
+        }
       </div>
       <div class="emp-card-actions">
         <button class="btn-edit" onclick="openEditEmployee(${emp.id})">✏️ Editar empleado</button>
@@ -1527,9 +1584,11 @@ function deleteEmployee(id) {
 // ── SETTINGS MODAL ────────────────────────────────────────────
 function openSettings() {
   const t = state.conflictThreshold || 2;
-  document.getElementById('thresh-2').classList.toggle('active', t === 2);
-  document.getElementById('thresh-3').classList.toggle('active', t === 3);
-  updateThreshDesc(t);
+  const tt = state.conflictThresholdTotal || 99;
+  const sel1 = document.getElementById('thresh-same-role');
+  const sel2 = document.getElementById('thresh-total');
+  if (sel1) sel1.value = String(t);
+  if (sel2) sel2.value = String(tt);
   renderCompatPairs();
   renderCustomRolesList();
   openModal('settings-modal');
@@ -1537,16 +1596,28 @@ function openSettings() {
 
 function setThreshold(n) {
   state.conflictThreshold = n;
-  document.getElementById('thresh-2').classList.toggle('active', n === 2);
-  document.getElementById('thresh-3').classList.toggle('active', n === 3);
-  updateThreshDesc(n);
 }
 
-function updateThreshDesc(n) {
-  const desc = document.getElementById('thresh-desc');
-  if (!desc) return;
-  if (n === 2) desc.textContent = 'Conflicto cuando 2 o más empleados del mismo puesto coinciden el mismo día.';
-  else desc.textContent = 'Conflicto solo cuando 3 o más empleados del mismo puesto coinciden el mismo día.';
+function saveSettings() {
+  // Read new dropdown values
+  const sel1 = document.getElementById('thresh-same-role');
+  const sel2 = document.getElementById('thresh-total');
+  if (sel1) state.conflictThreshold = parseInt(sel1.value);
+  if (sel2) state.conflictThresholdTotal = parseInt(sel2.value);
+
+  // Read compat pairs from selects
+  const pairs = state.compatibleRoles || [];
+  pairs.forEach((_, i) => {
+    const a = document.getElementById('compat-a-'+i);
+    const b = document.getElementById('compat-b-'+i);
+    if (a && b) pairs[i] = [a.value, b.value];
+  });
+  state.compatibleRoles = pairs;
+  saveState();
+  closeModal('settings-modal');
+  showToast('✅ Configuración guardada');
+  renderDashboard();
+  renderAnnual();
 }
 
 function renderCompatPairs() {
@@ -2123,42 +2194,34 @@ function rolesAreCompatible(roleA, roleB) {
 
 function getConflictDays(year) {
   const conflicts = [];
-  const threshold = state.conflictThreshold || 2;
+  const sameRoleThresh = state.conflictThreshold || 2;
+  const totalThresh = state.conflictThresholdTotal || 99;
 
   for (const [key, marks] of Object.entries(state.marks)) {
     if (!key.startsWith(String(year))) continue;
     const vacEmpIds = Object.entries(marks)
       .filter(([,t]) => t === 'V')
       .map(([id]) => Number(id));
-    if (vacEmpIds.length < threshold) continue;
+    if (!vacEmpIds.length) continue;
 
-    // Group employees by role
     const empObjs = vacEmpIds.map(id => state.employees.find(e => e.id === id)).filter(Boolean);
 
-    // Check if ALL pairs are compatible — if so, no conflict
-    let hasRealConflict = false;
-    for (let i = 0; i < empObjs.length; i++) {
-      for (let j = i + 1; j < empObjs.length; j++) {
-        const rA = empObjs[i].role || '';
-        const rB = empObjs[j].role || '';
-        if (!rolesAreCompatible(rA, rB)) {
-          // Check threshold: count employees with the same role
-          const roleCount = {};
-          empObjs.forEach(e => {
-            const r = (e.role||'').trim();
-            roleCount[r] = (roleCount[r] || 0) + 1;
-          });
-          // Conflict if any single role reaches threshold
-          if (Object.values(roleCount).some(c => c >= threshold)) {
-            hasRealConflict = true;
-          }
-          break;
-        }
-      }
-      if (hasRealConflict) break;
-    }
+    // Check 1: total employees conflict (any role)
+    const totalConflict = empObjs.length >= totalThresh;
 
-    if (hasRealConflict) {
+    // Check 2: same role conflict
+    const roleCount = {};
+    empObjs.forEach(e => {
+      const r = (e.role||'sin-puesto').trim();
+      roleCount[r] = (roleCount[r] || 0) + 1;
+    });
+    const sameRoleConflict = Object.values(roleCount).some(c => c >= sameRoleThresh) &&
+      empObjs.some((ea, i) => empObjs.some((eb, j) => i !== j &&
+        !rolesAreCompatible(ea.role||'', eb.role||'') &&
+        (ea.role||'') === (eb.role||'')
+      ));
+
+    if (totalConflict || sameRoleConflict) {
       conflicts.push({ key, empIds: vacEmpIds });
     }
   }
