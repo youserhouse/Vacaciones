@@ -944,6 +944,7 @@ function mergeRemoteState(remote) {
   if (remote.festivos) state.festivos = remote.festivos;
   if (remote.nextId) state.nextId = remote.nextId;
   if (remote.conflictThreshold) state.conflictThreshold = remote.conflictThreshold;
+  if (remote.conflictThresholdTotal) state.conflictThresholdTotal = remote.conflictThresholdTotal;
   if (remote.customRoles) state.customRoles = remote.customRoles;
   if (remote.compatibleRoles) {
     try {
@@ -1029,19 +1030,7 @@ function loadState() {
       migrateFestivoEmployee(p);
       if (!p.festivos) p.festivos = {};
       if (!p.conflictThreshold) p.conflictThreshold = 2;
-      if (!p.customRoles) p.customRoles = [];
-      if (!p.compatibleRoles) p.compatibleRoles = [['Encargado','Piker']];
-      p.employees.forEach(e => { if (!e.birthday) e.birthday = ''; });
-      return p;
-    }
-  } catch(e) {}
-  // Try migrating from old v2 save
-  try {
-    const old = localStorage.getItem('vac-app-v2');
-    if (old) {
-      const p = JSON.parse(old);
-      if (!p.festivos) p.festivos = {};
-      if (!p.conflictThreshold) p.conflictThreshold = 2;
+      if (!p.conflictThresholdTotal) p.conflictThresholdTotal = 99;
       if (!p.customRoles) p.customRoles = [];
       if (!p.compatibleRoles) p.compatibleRoles = [['Encargado','Piker']];
       p.employees.forEach(e => { if (!e.birthday) e.birthday = ''; });
@@ -1719,22 +1708,6 @@ function saveNewRole() {
 function deleteCustomRole(i) {
   state.customRoles.splice(i, 1);
   renderCustomRolesList();
-}
-
-function saveSettings() {
-  // Read compat pairs from selects
-  const pairs = state.compatibleRoles || [];
-  pairs.forEach((_, i) => {
-    const a = document.getElementById('compat-a-'+i);
-    const b = document.getElementById('compat-b-'+i);
-    if (a && b) pairs[i] = [a.value, b.value];
-  });
-  state.compatibleRoles = pairs;
-  saveState();
-  closeModal('settings-modal');
-  showToast('✅ Configuración guardada');
-  renderDashboard();
-  renderAnnual();
 }
 
 // ── MODAL HELPERS ─────────────────────────────────────────────
