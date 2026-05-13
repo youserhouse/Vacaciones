@@ -789,6 +789,21 @@
 
 <!-- Firebase SDK (compat version - works on all browsers) -->
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// SEGURIDAD: Esta config de Firebase es pública por diseño (es una web estática).
+// La protección real se hace en dos sitios FUERA de este archivo:
+//
+//  1. Google Cloud Console → APIs & Services → Credentials
+//     → Restringir la API Key al dominio de tu web (ej: https://tu-dominio.com/*)
+//     → URL: https://console.cloud.google.com/apis/credentials
+//
+//  2. Firebase Console → Firestore → Reglas
+//     → Copiar exactamente las reglas del archivo FIRESTORE_RULES.txt
+//     → Esto garantiza que solo usuarios autenticados puedan leer/escribir
+//
+//  NUNCA pongas aquí keys de terceros (OpenAI, Anthropic, etc.)
+//  Esas keys SÍ son privadas y deben guardarse en Firestore → config/secrets
+// ─────────────────────────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyA1iZHd2X0xfNNxtdg8VFPGj0gNJjO7iCI",
   authDomain: "control-vacaciones-50415.firebaseapp.com",
@@ -810,6 +825,27 @@ const auth = firebase.auth();
 const DOC_REF = db.collection('vacaciones').doc('estado');
 let isSyncing = false;
 window.currentUser = null;
+
+// ── SECRETS LOADER ────────────────────────────────────────────
+// Carga keys privadas desde Firestore → collection "config" → doc "secrets"
+// Úsalo si en el futuro necesitas una key de terceros (OpenAI, etc.)
+// Los datos en Firestore están protegidos por las Security Rules
+// Ejemplo de uso: const key = await loadSecret('openai_key');
+async function loadSecret(fieldName) {
+  try {
+    const snap = await db.collection('config').doc('secrets').get();
+    if (snap.exists) {
+      const val = snap.data()[fieldName];
+      if (val) return val;
+    }
+    console.warn(`⚠️ Secret "${fieldName}" no encontrado en Firestore config/secrets`);
+    return null;
+  } catch(e) {
+    console.warn(`⚠️ No se pudo leer secret "${fieldName}":`, e.message);
+    return null;
+  }
+}
+window.loadSecret = loadSecret;
 
 function diagMsg(msg, color) {
   const el = document.getElementById('diag-text');
