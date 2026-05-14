@@ -10,6 +10,12 @@ const ASSETS = [
   '/Control-de-Vacaciones/manifest.json',
   '/Control-de-Vacaciones/icon-192.png',
   '/Control-de-Vacaciones/icon-512.png',
+  '/Control-de-Vacaciones/styles.css',
+  '/Control-de-Vacaciones/state.js',
+  '/Control-de-Vacaciones/firebase.js',
+  '/Control-de-Vacaciones/calendar.js',
+  '/Control-de-Vacaciones/employees.js',
+  '/Control-de-Vacaciones/export-import.js',
 ];
 
 // ── INSTALL: guarda los archivos en caché ─────────────────────
