@@ -76,6 +76,7 @@
     <div class="brand-subtitle">Control de Vacaciones</div>
   </div>
   <div class="header-right">
+    <button class="theme-toggle" id="install-btn" onclick="installPWA()" style="display:none;background:rgba(80,158,72,.12);color:#509E48;border-color:rgba(80,158,72,.4);">⬇️ Instalar</button>
     <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Oscuro</button>
     <button class="theme-toggle" onclick="logoutUser()" id="logout-btn" style="display:none;background:rgba(255,60,60,.1);color:#ff7070;border-color:rgba(255,60,60,.3);">Cerrar sesión</button>
     <div class="tabs">
@@ -414,7 +415,7 @@ renderDashboard();
   const splash = document.getElementById('splash-screen');
   if (splash) splash.style.display = 'none';
   if (!pwd) return;
-  if (sessionStorage.getItem('meca-auth') === '1') {
+  if (sessionStorage.getItem('meca-auth') === '1' || localStorage.getItem('meca-auth') === '1') {
     pwd.style.display = 'none';
     showSplash();
   }
@@ -425,6 +426,7 @@ function checkPassword() {
   const error = document.getElementById('pwd-error');
   if (input === 'Filtros') {
     sessionStorage.setItem('meca-auth', '1');
+    localStorage.setItem('meca-auth', '1');
     const pwd = document.getElementById('password-screen');
     pwd.style.transition = 'opacity .4s ease';
     pwd.style.opacity = '0';
@@ -463,6 +465,33 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
       .then(() => console.log('✅ PWA lista'))
       .catch(err => console.warn('SW:', err));
+  });
+}
+
+// ── PWA INSTALL PROMPT ────────────────────────────────────────
+let _installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+  const btn = document.getElementById('install-btn');
+  if (btn) btn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  _installPrompt = null;
+  const btn = document.getElementById('install-btn');
+  if (btn) btn.style.display = 'none';
+  if (window.showToast) showToast('✅ App instalada correctamente');
+});
+
+function installPWA() {
+  if (!_installPrompt) return;
+  _installPrompt.prompt();
+  _installPrompt.userChoice.then(choice => {
+    _installPrompt = null;
+    const btn = document.getElementById('install-btn');
+    if (btn) btn.style.display = 'none';
   });
 }
 </script>
