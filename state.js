@@ -75,6 +75,7 @@ function saveState() {
 window.state = state;
 window.showView = showView;
 window.applyTheme = applyTheme;
+window.setTheme = setTheme;
 
 // ── UTILS ─────────────────────────────────────────────────────
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
@@ -166,20 +167,36 @@ function colorClasses(color) {
 }
 
 // ── THEME ─────────────────────────────────────────────────────
-function toggleTheme() {
-  const isLight = document.body.classList.toggle('light');
-  state.theme = isLight ? 'light' : 'dark';
-  const btn = document.getElementById('theme-btn');
-  btn.textContent = isLight ? '🌙 Oscuro' : '☀️ Claro';
+function setTheme(name) {
+  state.theme = name;
+  applyTheme();
   saveState();
 }
 
+function toggleTheme() {
+  const order = ['dark', 'light', 'mecafilter'];
+  const cur = state.theme || 'dark';
+  setTheme(order[(order.indexOf(cur) + 1) % order.length]);
+}
+
 function applyTheme() {
-  if (state.theme === 'light') {
-    document.body.classList.add('light');
-    const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = '🌙 Oscuro';
+  const t = state.theme || 'dark';
+  document.body.classList.remove('light', 'mecafilter');
+  if (t !== 'dark') document.body.classList.add(t);
+  const btn = document.getElementById('theme-btn');
+  if (btn) {
+    const labels = { dark: '☀️ Claro', light: '🟢 Meca', mecafilter: '🌙 Oscuro' };
+    btn.textContent = labels[t] || '☀️ Claro';
   }
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    const colors = { dark: '#f5a623', light: '#e0920a', mecafilter: '#509E48' };
+    meta.content = colors[t] || '#f5a623';
+  }
+  ['dark', 'light', 'mecafilter'].forEach(n => {
+    const c = document.getElementById('tc-' + n);
+    if (c) c.classList.toggle('active', n === t);
+  });
 }
 
 // ── VIEWS ─────────────────────────────────────────────────────
