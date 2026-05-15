@@ -7,7 +7,7 @@
   "scope": "/Control-de-Vacaciones/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f0f13",
+  "background_color": "#0D0B29",
   "theme_color": "#f5a623",
   "icons": [
     {
@@ -23,7 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "icon-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
