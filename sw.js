@@ -1,11 +1,12 @@
 // ── Control de Vacaciones — Service Worker ────────────────────
 // Versión de caché: cambia este número cuando actualices la app
 // para que los usuarios reciban la versión nueva automáticamente
-const CACHE_NAME = 'vacaciones-v3';
+const CACHE_NAME = 'vacaciones-v4';
 
 // Archivos que se guardan en caché para funcionar sin internet
 const ASSETS = [
-  '/Control-de-Vacaciones/',
+  '/Control-de-Vacaciones/login.html',
+  '/Control-de-Vacaciones/splash.html',
   '/Control-de-Vacaciones/index.html',
   '/Control-de-Vacaciones/manifest.json',
   '/Control-de-Vacaciones/icon-192.png',

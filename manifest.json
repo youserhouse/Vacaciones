@@ -3,7 +3,7 @@
   "name": "Control de Vacaciones",
   "short_name": "Vacaciones",
   "description": "Gestión de vacaciones del equipo Mecafilter",
-  "start_url": "/Control-de-Vacaciones/",
+  "start_url": "/Control-de-Vacaciones/login.html",
   "scope": "/Control-de-Vacaciones/",
   "display": "standalone",
   "orientation": "portrait",

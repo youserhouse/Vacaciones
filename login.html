@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Vacaciones — Acceso</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f5a623">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  body { background:#0f0f13; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .login-card {
+    text-align:center; padding:40px 32px; max-width:340px; width:90%;
+    background:#1a1a22; border:1px solid #2e2e3e; border-radius:20px;
+  }
+  .login-logo { margin-bottom:24px; }
+  .login-subtitle { font-size:0.82rem; color:#7070a0; margin-bottom:28px; }
+  .login-input {
+    width:100%; background:#0f0f13; border:1px solid #2e2e3e; color:#e8e8f0;
+    padding:13px 16px; border-radius:10px; font-family:'DM Sans',sans-serif;
+    font-size:1rem; outline:none; margin-bottom:12px; text-align:center;
+    letter-spacing:2px; box-sizing:border-box; transition:border-color .2s;
+  }
+  .login-input:focus { border-color:#f5a623; }
+  .login-btn {
+    width:100%; background:#f5a623; color:#000; border:none; border-radius:10px;
+    padding:13px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem;
+    cursor:pointer; transition:filter .2s;
+  }
+  .login-btn:hover { filter:brightness(1.08); }
+  .login-error { margin-top:12px; font-size:0.8rem; color:#ff6666; display:none; }
+</style>
+</head>
+<body>
+
+<script>
+  // Si ya está autenticado, ir directo a la app
+  if (localStorage.getItem('meca-auth') === '1') {
+    location.replace('index.html');
+  }
+</script>
+
+<div class="login-card">
+  <div class="login-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" style="height:38px;width:auto;overflow:visible;" aria-label="MECAFILTER">
+      <text x="0" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" fill="#F2F3F5">MECA</text>
+      <text x="98" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" font-style="italic" fill="#509E48">FILTER</text>
+      <text x="1" y="48" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" letter-spacing="2.8" fill="#9097A1">YOUR SMART CHOICE</text>
+    </svg>
+  </div>
+  <div class="login-subtitle">Introduce la contraseña para acceder</div>
+  <input id="pwd-input" class="login-input" type="password" placeholder="Contraseña…"
+    onkeydown="if(event.key==='Enter') checkPassword()">
+  <button class="login-btn" onclick="checkPassword()">Entrar</button>
+  <div id="pwd-error" class="login-error">❌ Contraseña incorrecta</div>
+</div>
+
+<script>
+function checkPassword() {
+  const input = document.getElementById('pwd-input');
+  const error = document.getElementById('pwd-error');
+  if (input.value === 'Filtros') {
+    localStorage.setItem('meca-auth', '1');
+    location.replace('splash.html');
+  } else {
+    error.style.display = 'block';
+    input.value = '';
+    input.focus();
+    input.style.borderColor = '#ff6666';
+    setTimeout(() => { input.style.borderColor = '#2e2e3e'; }, 1500);
+  }
+}
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+
+</body>
+</html>
