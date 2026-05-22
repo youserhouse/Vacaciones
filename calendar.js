@@ -126,6 +126,11 @@ function renderDashboard() {
     const futurePct = Math.min(100, Math.round((future/emp.totalDays)*100));
     const textColor = getTextColorForBg(emp.color);
     const isCurrentYear = y === new Date().getFullYear();
+    const isBlack = emp.color === '#000000';
+    const numStyle = isBlack
+      ? `color:${emp.color};text-shadow:-1px 0 #fff,0 1px #fff,1px 0 #fff,0 -1px #fff`
+      : `color:${emp.color}`;
+    const barBorder = isBlack ? 'outline:1px solid rgba(255,255,255,.35);' : '';
     return `
     <div class="emp-card" style="border-left:4px solid ${emp.color}">
       <div class="emp-header">
@@ -135,19 +140,19 @@ function renderDashboard() {
       </div>
       <div class="progress-wrap">
         <div class="progress-label"><span>Vacaciones planificadas</span><span>${pct}%</span></div>
-        <div class="progress-bar" style="height:8px;">
+        <div class="progress-bar" style="height:8px;${barBorder}">
           <div class="progress-fill" style="width:${pastPct}%;background:${emp.color};opacity:0.5;border-radius:99px 0 0 99px;"></div>
           <div class="progress-fill" style="width:${futurePct}%;background:${emp.color};border-radius:${pastPct===0?'99px':'0'} 99px 99px ${pastPct===0?'99px':'0'};margin-top:-8px;margin-left:${pastPct}%;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.7rem;color:var(--muted);">
           <span>🕐 Disfrutados: <strong style="color:var(--text)">${past}</strong></span>
-          <span>📅 Pendientes: <strong style="color:${emp.color}">${future}</strong></span>
+          <span>📅 Pendientes: <strong style="${numStyle}">${future}</strong></span>
         </div>
       </div>
       <div class="days-taken" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
         ${isCurrentYear
-          ? `<strong style="color:${emp.color};font-size:1rem;">${notScheduled}</strong> días sin asignar de <strong>${emp.totalDays}</strong>`
-          : `<strong>${used}</strong> de <strong>${emp.totalDays}</strong> días · <strong style="color:${emp.color}">${emp.totalDays-used}</strong> restantes`
+          ? `<strong style="${numStyle};font-size:1rem;">${notScheduled}</strong> días sin asignar de <strong>${emp.totalDays}</strong>`
+          : `<strong>${used}</strong> de <strong>${emp.totalDays}</strong> días · <strong style="${numStyle}">${emp.totalDays-used}</strong> restantes`
         }
       </div>
       <div class="emp-card-actions">
