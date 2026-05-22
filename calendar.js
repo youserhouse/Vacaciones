@@ -130,7 +130,7 @@ function renderDashboard() {
     const numStyle = isBlack
       ? `color:${emp.color};text-shadow:-1px 0 #fff,0 1px #fff,1px 0 #fff,0 -1px #fff`
       : `color:${emp.color}`;
-    const barBorder = isBlack ? 'outline:1px solid rgba(255,255,255,.35);' : '';
+    const fillShadow = isBlack ? 'box-shadow:0 0 0 1.5px rgba(255,255,255,.55);' : '';
     return `
     <div class="emp-card" style="border-left:4px solid ${emp.color}">
       <div class="emp-header">
@@ -140,9 +140,9 @@ function renderDashboard() {
       </div>
       <div class="progress-wrap">
         <div class="progress-label"><span>Vacaciones planificadas</span><span>${pct}%</span></div>
-        <div class="progress-bar" style="height:8px;${barBorder}">
-          <div class="progress-fill" style="width:${pastPct}%;background:${emp.color};opacity:0.5;border-radius:99px 0 0 99px;"></div>
-          <div class="progress-fill" style="width:${futurePct}%;background:${emp.color};border-radius:${pastPct===0?'99px':'0'} 99px 99px ${pastPct===0?'99px':'0'};margin-top:-8px;margin-left:${pastPct}%;"></div>
+        <div class="progress-bar" style="height:8px;">
+          <div class="progress-fill" style="width:${pastPct}%;background:${emp.color};opacity:0.5;border-radius:99px 0 0 99px;${fillShadow}"></div>
+          <div class="progress-fill" style="width:${futurePct}%;background:${emp.color};border-radius:${pastPct===0?'99px':'0'} 99px 99px ${pastPct===0?'99px':'0'};margin-top:-8px;margin-left:${pastPct}%;${fillShadow}"></div>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.7rem;color:var(--muted);">
           <span>🕐 Disfrutados: <strong style="color:var(--text)">${past}</strong></span>

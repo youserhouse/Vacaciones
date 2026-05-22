@@ -315,12 +315,12 @@ main { padding: 24px 28px; max-width: 1600px; margin: 0 auto; }
 .day-cell.today { outline: 2px solid var(--accent); outline-offset: 1px; }
 .day-cell.marked { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
 .day-cell.marked.color-white { color: #111 !important; text-shadow: none !important; }
-.day-cell.marked.color-black { color: #fff !important; text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff; }
+.day-cell.marked.color-black { color: #fff !important; text-shadow: 0 1px 3px rgba(255,255,255,.2); }
 .day-cell.bg-white { outline: 1.5px solid #aaa !important; }
 body.light .day-cell.bg-white { outline: 1.5px solid #555 !important; }
-.day-cell.bg-black { outline: 2px solid rgba(255,255,255,.45) !important; }
-body.light .day-cell.bg-black { outline: 1.5px solid rgba(0,0,0,.3) !important; }
-body.light .day-cell.marked.color-black { color: #fff !important; text-shadow: none !important; }
+.day-cell.bg-black { outline: 1.5px solid #555 !important; }
+body.light .day-cell.bg-black { outline: 1.5px solid #ccc !important; }
+body.light .day-cell.marked.color-black { color: #fff !important; }
 .day-cell.is-festivo {
   background: rgba(255,107,107,.15) !important;
   outline: 1px solid rgba(255,107,107,.4);
