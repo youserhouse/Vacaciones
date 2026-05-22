@@ -1,23 +1,23 @@
 // ── Control de Vacaciones — Service Worker ────────────────────
 // Versión de caché: cambia este número cuando actualices la app
 // para que los usuarios reciban la versión nueva automáticamente
-const CACHE_NAME = 'vacaciones-v9';
+const CACHE_NAME = 'vacaciones-v10';
 
 // Archivos que se guardan en caché para funcionar sin internet
 const ASSETS = [
-  '/Control-de-Vacaciones/login.html',
-  '/Control-de-Vacaciones/splash.html',
-  '/Control-de-Vacaciones/index.html',
-  '/Control-de-Vacaciones/manifest.json',
-  '/Control-de-Vacaciones/icon-192.png',
-  '/Control-de-Vacaciones/icon-512.png',
-  '/Control-de-Vacaciones/icon-maskable.png',
-  '/Control-de-Vacaciones/styles.css',
-  '/Control-de-Vacaciones/state.js',
-  '/Control-de-Vacaciones/firebase.js',
-  '/Control-de-Vacaciones/calendar.js',
-  '/Control-de-Vacaciones/employees.js',
-  '/Control-de-Vacaciones/export-import.js',
+  '/Vacaciones/login.html',
+  '/Vacaciones/splash.html',
+  '/Vacaciones/index.html',
+  '/Vacaciones/manifest.json',
+  '/Vacaciones/icon-192.png',
+  '/Vacaciones/icon-512.png',
+  '/Vacaciones/icon-maskable.png',
+  '/Vacaciones/styles.css',
+  '/Vacaciones/state.js',
+  '/Vacaciones/firebase.js',
+  '/Vacaciones/calendar.js',
+  '/Vacaciones/employees.js',
+  '/Vacaciones/export-import.js',
 ];
 
 // ── INSTALL: guarda los archivos en caché ─────────────────────
@@ -81,7 +81,7 @@ self.addEventListener('fetch', event => {
         return caches.match(event.request).then(cached => {
           if (cached) return cached;
           // Si no está en caché y no hay red, devuelve index.html
-          return caches.match('/Control-de-Vacaciones/index.html');
+          return caches.match('/Vacaciones/index.html');
         });
       })
   );
