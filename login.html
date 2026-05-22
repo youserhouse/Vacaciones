@@ -5,81 +5,240 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Control de Vacaciones — Acceso</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f5a623">
+<meta name="theme-color" content="#0D0B29">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="styles.css">
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-  html, body { height:100%; margin:0; }
-  body { background:#0f0f13; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-  .login-card {
-    text-align:center; padding:40px 32px; max-width:340px; width:90%;
-    background:#1a1a22; border:1px solid #2e2e3e; border-radius:20px;
-  }
-  .login-logo { margin-bottom:24px; }
-  .login-subtitle { font-size:0.82rem; color:#7070a0; margin-bottom:28px; }
-  .login-input {
-    width:100%; background:#0f0f13; border:1px solid #2e2e3e; color:#e8e8f0;
-    padding:13px 16px; border-radius:10px; font-family:'DM Sans',sans-serif;
-    font-size:1rem; outline:none; margin-bottom:12px; text-align:center;
-    letter-spacing:2px; box-sizing:border-box; transition:border-color .2s;
-  }
-  .login-input:focus { border-color:#f5a623; }
-  .login-btn {
-    width:100%; background:#f5a623; color:#000; border:none; border-radius:10px;
-    padding:13px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem;
-    cursor:pointer; transition:filter .2s;
-  }
-  .login-btn:hover { filter:brightness(1.08); }
-  .login-error { margin-top:12px; font-size:0.8rem; color:#ff6666; display:none; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; font-family: 'DM Sans', sans-serif;
+  background: #0D0B29; color: #F2F3F5;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.card {
+  width: 90%; max-width: 380px;
+  background: #15133a; border: 1px solid #2d2a5e;
+  border-radius: 20px; padding: 40px 32px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.5);
+}
+.logo { text-align: center; margin-bottom: 28px; }
+.logo svg { overflow: visible; }
+.logo-sub { font-size: 0.68rem; color: #9097A1; letter-spacing: 0.6px; margin-top: 4px; }
+
+/* Google button */
+.btn-google {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 12px 16px; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
+  font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all .2s;
+  background: #fff; color: #1a1a2e; border: none;
+}
+.btn-google:hover { background: #f0f0f0; }
+.btn-google:disabled { opacity: .5; cursor: not-allowed; }
+.google-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* Divider */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0; color: #9097A1; font-size: 0.78rem;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: #2d2a5e;
+}
+
+/* Form */
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 0.75rem; color: #9097A1; margin-bottom: 6px; font-weight: 600; letter-spacing: .3px; }
+.field input {
+  width: 100%; background: #0D0B29; border: 1px solid #2d2a5e; color: #F2F3F5;
+  padding: 12px 14px; border-radius: 9px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; outline: none; transition: border-color .2s;
+}
+.field input:focus { border-color: #509E48; }
+
+.btn-email {
+  width: 100%; background: #509E48; color: #fff; border: none;
+  border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: filter .2s; margin-top: 4px;
+}
+.btn-email:hover { filter: brightness(1.1); }
+.btn-email:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Error / loading */
+.msg-error {
+  display: none; margin-top: 14px; padding: 10px 14px;
+  background: rgba(255,60,60,.1); border: 1px solid rgba(255,60,60,.3);
+  border-radius: 8px; font-size: 0.8rem; color: #ff7070; text-align: center;
+}
+.msg-loading {
+  display: none; margin-top: 14px; text-align: center;
+  font-size: 0.8rem; color: #9097A1;
+}
+.spinner {
+  display: inline-block; width: 14px; height: 14px; border: 2px solid #2d2a5e;
+  border-top-color: #509E48; border-radius: 50%; animation: spin .7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<script>
-  // Si ya está autenticado, ir directo a la app
-  if (localStorage.getItem('meca-auth') === '1') {
-    location.replace('index.html');
-  }
-</script>
-
-<div class="login-card">
-  <div class="login-logo">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" style="height:38px;width:auto;overflow:visible;" aria-label="MECAFILTER">
+<div class="card">
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" style="height:38px;width:auto;" aria-label="MECAFILTER">
       <text x="0" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" fill="#F2F3F5">MECA</text>
       <text x="98" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" font-style="italic" fill="#509E48">FILTER</text>
       <text x="1" y="48" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" letter-spacing="2.8" fill="#9097A1">YOUR SMART CHOICE</text>
     </svg>
+    <div class="logo-sub">Control de Vacaciones</div>
   </div>
-  <div class="login-subtitle">Introduce la contraseña para acceder</div>
-  <input id="pwd-input" class="login-input" type="password" placeholder="Contraseña…"
-    onkeydown="if(event.key==='Enter') checkPassword()">
-  <button class="login-btn" onclick="checkPassword()">Entrar</button>
-  <div id="pwd-error" class="login-error">❌ Contraseña incorrecta</div>
+
+  <!-- Google -->
+  <button class="btn-google" id="btn-google" onclick="signInGoogle()">
+    <svg class="google-icon" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Continuar con Google
+  </button>
+
+  <div class="divider">o con correo</div>
+
+  <!-- Email / Password -->
+  <div class="field">
+    <label>Correo electrónico</label>
+    <input id="email-input" type="email" placeholder="tu@correo.com"
+      onkeydown="if(event.key==='Enter') document.getElementById('pwd-input').focus()">
+  </div>
+  <div class="field">
+    <label>Contraseña</label>
+    <input id="pwd-input" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') signInEmail()">
+  </div>
+  <button class="btn-email" id="btn-email" onclick="signInEmail()">Entrar</button>
+
+  <div class="msg-error" id="msg-error"></div>
+  <div class="msg-loading" id="msg-loading">
+    <span class="spinner"></span> Verificando acceso…
+  </div>
 </div>
 
 <script>
-function checkPassword() {
-  const input = document.getElementById('pwd-input');
-  const error = document.getElementById('pwd-error');
-  if (input.value === 'Filtros') {
-    localStorage.setItem('meca-auth', '1');
+// ── Firebase init ─────────────────────────────────────────────
+const _cfg = {
+  apiKey: "AIzaSyA1iZHd2X0xfNNxtdg8VFPGj0gNJjO7iCI",
+  authDomain: "control-vacaciones-50415.firebaseapp.com",
+  projectId: "control-vacaciones-50415",
+  storageBucket: "control-vacaciones-50415.appspot.com",
+  messagingSenderId: "158631364453",
+  appId: "1:158631364453:web:4ed0af369aaaec0cbe838c"
+};
+firebase.initializeApp(_cfg);
+const _auth = firebase.auth();
+const _db   = firebase.firestore();
+
+// ── Whitelist check (Firestore: config/access → emails:[]) ────
+async function isAuthorized(email) {
+  try {
+    const snap = await _db.collection('config').doc('access').get();
+    if (!snap.exists) return false;
+    const list = (snap.data().emails || []).map(e => e.toLowerCase().trim());
+    return list.includes(email.toLowerCase().trim());
+  } catch { return false; }
+}
+
+// ── After successful sign-in ──────────────────────────────────
+async function handleUser(user) {
+  showLoading(true);
+  const ok = await isAuthorized(user.email);
+  if (ok) {
     location.replace('splash.html');
   } else {
-    error.style.display = 'block';
-    input.value = '';
-    input.focus();
-    input.style.borderColor = '#ff6666';
-    setTimeout(() => { input.style.borderColor = '#2e2e3e'; }, 1500);
+    await _auth.signOut();
+    showLoading(false);
+    showError('❌ Acceso no autorizado para ' + user.email);
   }
 }
 
-// Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-</script>
+// ── Auth state: already logged in? ───────────────────────────
+_auth.onAuthStateChanged(user => {
+  if (user) handleUser(user);
+});
 
+// ── Redirect result (mobile Google) ──────────────────────────
+_auth.getRedirectResult()
+  .then(r => { if (r && r.user) handleUser(r.user); })
+  .catch(e => { if (e.code !== 'auth/no-auth-event') showError(e.message); });
+
+// ── Google sign-in ────────────────────────────────────────────
+async function signInGoogle() {
+  setButtons(false);
+  clearError();
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.addScope('email');
+  try {
+    await _auth.signInWithPopup(provider);
+  } catch (e) {
+    if (['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(e.code)) {
+      _auth.signInWithRedirect(provider);
+    } else {
+      showError(e.message);
+      setButtons(true);
+    }
+  }
+}
+
+// ── Email / password sign-in ──────────────────────────────────
+async function signInEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  const pwd   = document.getElementById('pwd-input').value;
+  if (!email || !pwd) { showError('Introduce correo y contraseña'); return; }
+  setButtons(false);
+  clearError();
+  const MSGS = {
+    'auth/user-not-found':   'Correo no registrado',
+    'auth/wrong-password':   'Contraseña incorrecta',
+    'auth/invalid-email':    'Correo no válido',
+    'auth/invalid-credential': 'Correo o contraseña incorrectos',
+    'auth/too-many-requests':'Demasiados intentos, espera un momento',
+  };
+  try {
+    await _auth.signInWithEmailAndPassword(email, pwd);
+  } catch (e) {
+    showError(MSGS[e.code] || e.message);
+    setButtons(true);
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('msg-error');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('msg-loading').style.display = 'none';
+}
+function clearError() { document.getElementById('msg-error').style.display = 'none'; }
+function showLoading(on) {
+  document.getElementById('msg-loading').style.display = on ? 'block' : 'none';
+  document.getElementById('msg-error').style.display = 'none';
+}
+function setButtons(enabled) {
+  document.getElementById('btn-google').disabled = !enabled;
+  document.getElementById('btn-email').disabled  = !enabled;
+}
+
+// Service Worker
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
 </body>
 </html>

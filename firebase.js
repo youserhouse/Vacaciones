@@ -48,60 +48,16 @@ async function loadSecret(fieldName) {
 window.loadSecret = loadSecret;
 
 // ── AUTH ──────────────────────────────────────────────────────
-function loginWithGoogle() {
-  const btn = document.getElementById('google-login-btn');
-  const loading = document.getElementById('login-loading');
-  const err = document.getElementById('login-error');
-  btn.style.display = 'none';
-  loading.style.display = 'block';
-  loading.textContent = 'Conectando...';
-  err.style.display = 'none';
-
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.addScope('email');
-
-  auth.signInWithPopup(provider)
-    .then(result => { console.log('Login OK:', result.user.email); })
-    .catch(popupError => {
-      console.warn('Popup failed, trying redirect:', popupError.code);
-      if (['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(popupError.code)) {
-        auth.signInWithRedirect(provider).catch(e => {
-          btn.style.display = 'flex';
-          loading.style.display = 'none';
-          err.textContent = 'Error: ' + e.message;
-          err.style.display = 'block';
-        });
-      } else {
-        btn.style.display = 'flex';
-        loading.style.display = 'none';
-        err.textContent = 'Error: ' + popupError.message;
-        err.style.display = 'block';
-      }
-    });
-}
-
-auth.getRedirectResult().then(result => {
-  if (result && result.user) console.log('Redirect login OK:', result.user.email);
-}).catch(e => {
-  if (e.code !== 'auth/no-auth-event') console.warn('Redirect error:', e.message);
-});
-
 function logoutUser() { auth.signOut(); }
 
 auth.onAuthStateChanged(user => {
-  const loginScreen = document.getElementById('login-screen');
-  const logoutBtn = document.getElementById('logout-btn');
   if (user) {
     window.currentUser = user;
-    if (loginScreen) loginScreen.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'none';
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.style.display = '';
     startSync();
   } else {
-    auth.signInAnonymously().catch(e => {
-      console.warn('Anonymous auth failed:', e.message);
-      if (loginScreen) loginScreen.style.display = 'none';
-      startSync();
-    });
+    location.replace('login.html');
   }
 });
 

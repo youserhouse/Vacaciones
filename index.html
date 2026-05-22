@@ -25,15 +25,6 @@
 </head>
 <body>
 
-<!-- Auth guard: si no está autenticado, ir al login -->
-<script>
-  if (!localStorage.getItem('meca-auth')) {
-    location.replace('login.html');
-  }
-</script>
-
-<!-- Login screen (Firebase anonymous auth) -->
-<div id="login-screen" style="display:none;"></div>
 
 <header>
   <div class="brand">
