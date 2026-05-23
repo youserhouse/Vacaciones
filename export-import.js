@@ -551,3 +551,173 @@ function confirmImport() {
   showToast(`✅ ${imported} días importados al calendario`);
   showView('annual');
 }
+
+// ── IMPORTAR FESTIVOS DESDE EXCEL ─────────────────────────────
+let festivosExcelParsed = [];
+
+function openFestivosExcelModal() {
+  festivosExcelParsed = [];
+  const yearSel = document.getElementById('festivos-excel-year');
+  if (yearSel) {
+    yearSel.innerHTML = '';
+    for (let y = 2024; y <= 2030; y++) yearSel.add(new Option(y, y));
+    yearSel.value = state.currentYear;
+  }
+  const fi = document.getElementById('festivos-excel-file');
+  if (fi) fi.value = '';
+  const fn = document.getElementById('festivos-dz-filename');
+  if (fn) fn.textContent = '';
+  const preview = document.getElementById('festivos-excel-preview');
+  if (preview) preview.style.display = 'none';
+  const btn = document.getElementById('festivos-import-btn');
+  if (btn) btn.disabled = true;
+  const chk = document.getElementById('festivos-replace-check');
+  if (chk) chk.checked = false;
+  openModal('festivos-excel-modal');
+}
+
+function handleFestivosFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  document.getElementById('festivos-dz-filename').textContent = '📎 ' + file.name;
+
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = new Uint8Array(ev.target.result);
+
+      // ── cellDates: false para obtener seriales numéricos sin conversión UTC
+      const workbook = XLSX.read(data, { type: 'array', cellDates: false });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const year = parseInt(document.getElementById('festivos-excel-year').value);
+
+      const dateSet = new Set();
+      const dates = [];
+
+      // ── Recorrer todas las celdas del sheet detectando tipo
+      for (const cellAddr of Object.keys(sheet)) {
+        if (cellAddr[0] === '!') continue; // ignorar metadatos (!ref, !cols, etc.)
+        const cell = sheet[cellAddr];
+        let date = null;
+
+        if (cell.t === 'n' && cell.v >= 40000 && cell.v <= 60000) {
+          // ── Serial numérico de Excel → parsear con SSF en hora local
+          const parsed = XLSX.SSF.parse_date_code(cell.v);
+          // parsed devuelve { y, m, d, H, M, S }
+          date = new Date(parsed.y, parsed.m - 1, parsed.d);
+
+        } else if (cell.t === 's') {
+          const str = String(cell.v).trim();
+
+          // ── YYYY-MM-DD → parsear por partes para evitar interpretación UTC
+          const ymd = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          if (ymd) {
+            date = new Date(parseInt(ymd[1]), parseInt(ymd[2]) - 1, parseInt(ymd[3]));
+          }
+
+          // ── DD/MM/YYYY → parsear por partes
+          if (!date) {
+            const dmy = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (dmy) {
+              date = new Date(parseInt(dmy[3]), parseInt(dmy[2]) - 1, parseInt(dmy[1]));
+            }
+          }
+        }
+
+        if (!date || isNaN(date.getTime())) continue;
+        if (date.getFullYear() !== year) continue;
+
+        // ── Construir clave YYYY-MM-DD en hora local (sin toISOString para evitar UTC)
+        const key = date.getFullYear() + '-' +
+          String(date.getMonth() + 1).padStart(2, '0') + '-' +
+          String(date.getDate()).padStart(2, '0');
+
+        if (!dateSet.has(key)) {
+          dateSet.add(key);
+          dates.push(key);
+        }
+      }
+
+      // ── Ordenar ascendente
+      dates.sort();
+
+      festivosExcelParsed = dates;
+      showFestivosPreview(dates);
+
+    } catch(err) {
+      showToast('❌ Error al leer el archivo: ' + err.message);
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+
+function showFestivosPreview(dates) {
+  const preview = document.getElementById('festivos-excel-preview');
+  const list = document.getElementById('festivos-preview-list');
+  const btn = document.getElementById('festivos-import-btn');
+
+  if (!dates.length) {
+    list.innerHTML = '<div style="color:#ff6666;font-size:0.8rem;">⚠️ No se encontraron fechas válidas para el año seleccionado.</div>';
+    preview.style.display = 'block';
+    btn.disabled = true;
+    return;
+  }
+
+  list.innerHTML = dates.map(key => {
+    const p = key.split('-');
+    const label = `${parseInt(p[2])} ${MONTHS[parseInt(p[1])-1]} ${p[0]}`;
+    const already = state.festivos[key] ? ' <span style="color:var(--muted);font-size:0.7rem;">(ya existe)</span>' : '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:0.8rem;">
+      <span style="color:var(--festivo);">🎌</span>
+      <span>${label}</span>${already}
+    </div>`;
+  }).join('');
+
+  list.innerHTML += `<div style="margin-top:8px;font-size:0.75rem;color:var(--muted);font-weight:600;">${dates.length} festivo${dates.length>1?'s':''} detectado${dates.length>1?'s':''}</div>`;
+  preview.style.display = 'block';
+  btn.disabled = false;
+}
+
+function confirmFestivosImport() {
+  if (!festivosExcelParsed.length) return;
+
+  const year = parseInt(document.getElementById('festivos-excel-year').value);
+  const replace = document.getElementById('festivos-replace-check').checked;
+
+  // Si reemplazar: borrar festivos existentes de ese año
+  if (replace) {
+    for (const key of Object.keys(state.festivos)) {
+      if (key.startsWith(String(year))) delete state.festivos[key];
+    }
+  }
+
+  // Añadir los nuevos
+  festivosExcelParsed.forEach(key => {
+    state.festivos[key] = true;
+  });
+
+  saveState();
+  closeModal('festivos-excel-modal');
+  showToast(`✅ ${festivosExcelParsed.length} festivos importados para ${year}`);
+  renderDashboard();
+  renderAnnual();
+}
+
+// Drag & drop para festivos Excel
+document.addEventListener('DOMContentLoaded', () => {
+  const dz = document.getElementById('festivos-drop-zone');
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('festivos-excel-file').files = e.dataTransfer.files;
+      handleFestivosFile({ target: { files: [file] } });
+    }
+  });
+});
