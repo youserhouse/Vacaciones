@@ -8,6 +8,7 @@
 <!-- Librerías externas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -54,7 +55,10 @@
   <div class="view active" id="view-dashboard">
     <div class="stats-bar" id="stats-bar"></div>
     <div class="festivos-panel">
-      <div class="section-title">🎌 Festivos marcados este año</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="section-title" style="margin-bottom:0;">🎌 Festivos marcados este año</div>
+        <button class="btn btn-ghost" style="font-size:0.78rem;padding:6px 14px;" onclick="openFestivosExcelModal()">📊 Importar Excel</button>
+      </div>
       <div class="festivos-list" id="festivos-list"></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -94,6 +98,35 @@
   </div>
 
 </main>
+
+<!-- Festivos Excel Modal -->
+<div class="overlay" id="festivos-excel-modal">
+  <div class="modal" style="width:500px;">
+    <h3>🎌 Importar festivos desde Excel</h3>
+    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Sube un archivo Excel (.xlsx) con las fechas de los días festivos. Se detectan automáticamente y se guardan en la base de datos.</p>
+    <div class="form-group">
+      <label>Año</label>
+      <select id="festivos-excel-year"></select>
+    </div>
+    <div class="drop-zone" id="festivos-drop-zone">
+      <input type="file" id="festivos-excel-file" accept=".xlsx,.xls,.ods" onchange="handleFestivosFile(event)">
+      <div class="dz-icon">📊</div>
+      <div class="dz-text">Arrastra aquí el archivo Excel<br><span style="color:#7ec8e3">o haz clic para seleccionar</span></div>
+      <div class="dz-file" id="festivos-dz-filename"></div>
+    </div>
+    <div id="festivos-excel-preview" style="display:none;margin-top:14px;">
+      <div id="festivos-preview-list" style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px 12px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <input type="checkbox" id="festivos-replace-check" style="width:auto;cursor:pointer;">
+        <label for="festivos-replace-check" style="margin:0;font-size:0.82rem;cursor:pointer;">Reemplazar festivos existentes de ese año</label>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-ghost" onclick="closeModal('festivos-excel-modal')">Cancelar</button>
+      <button class="btn btn-accent" id="festivos-import-btn" onclick="confirmFestivosImport()" disabled>✅ Importar festivos</button>
+    </div>
+  </div>
+</div>
 
 <!-- Import Modal -->
 <div class="overlay" id="import-modal">
