@@ -1,7 +1,7 @@
 // ── Control de Vacaciones — Service Worker ────────────────────
 // Versión de caché: cambia este número cuando actualices la app
 // para que los usuarios reciban la versión nueva automáticamente
-const CACHE_NAME = 'vacaciones-v10';
+const CACHE_NAME = 'vacaciones-v11';
 
 // Archivos que se guardan en caché para funcionar sin internet
 const ASSETS = [
@@ -19,6 +19,7 @@ const ASSETS = [
   '/Vacaciones/calendar.js',
   '/Vacaciones/employees.js',
   '/Vacaciones/export-import.js',
+  '/Vacaciones/gantt.js',
 ];
 
 // ── INSTALL: guarda los archivos en caché ─────────────────────
