@@ -21,89 +21,239 @@
 <meta name="apple-mobile-web-app-title" content="Vacaciones">
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<!-- Estilos -->
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════ -->
+<aside class="app-sidebar" id="app-sidebar">
 
-<header>
-  <div class="brand">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" class="brand-logo" aria-label="MECAFILTER">
-      <text x="0" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" class="logo-meca">MECA</text>
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" class="sidebar-logo" aria-label="MECAFILTER">
+      <text x="0"  y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" class="logo-meca">MECA</text>
       <text x="98" y="35" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="34" font-style="italic" class="logo-filter">FILTER</text>
-      <text x="1" y="48" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" letter-spacing="2.8" class="logo-tag">YOUR SMART CHOICE</text>
+      <text x="1"  y="48" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" letter-spacing="2.8" class="logo-tag">YOUR SMART CHOICE</text>
     </svg>
-    <div class="brand-subtitle">Control de Vacaciones</div>
+    <div class="sidebar-brand-sub">Control de Vacaciones</div>
   </div>
-  <div class="header-right">
-    <button class="theme-toggle" id="install-btn" onclick="installPWA()" style="display:none;background:rgba(80,158,72,.12);color:#509E48;border-color:rgba(80,158,72,.4);">⬇️ Instalar</button>
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Oscuro</button>
-    <button class="theme-toggle" onclick="logoutUser()" id="logout-btn" style="display:none;background:rgba(255,60,60,.1);color:#ff7070;border-color:rgba(255,60,60,.3);">Cerrar sesión</button>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="showView('dashboard')">Resumen</button>
-      <button class="tab-btn" onclick="showView('annual')">Anual</button>
-      <button class="tab-btn" onclick="showView('monthly')">Mensual</button>
-    </div>
-    <button class="btn btn-accent" onclick="openAddEmployee()">+ Empleado</button>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Vistas</div>
+
+    <button class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span>Resumen</span>
+    </button>
+
+    <button class="nav-item" id="nav-annual" onclick="showView('annual')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+      <span>Calendario Anual</span>
+    </button>
+
+    <button class="nav-item" id="nav-monthly" onclick="showView('monthly')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+        <circle cx="8"  cy="16" r="1" fill="currentColor"/>
+        <circle cx="12" cy="16" r="1" fill="currentColor"/>
+        <circle cx="16" cy="16" r="1" fill="currentColor"/>
+      </svg>
+      <span>Calendario Mensual</span>
+    </button>
+
+    <button class="nav-item" id="nav-gantt" onclick="showView('gantt')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3"  y1="6"  x2="21" y2="6"/>
+        <line x1="3"  y1="12" x2="21" y2="12"/>
+        <line x1="3"  y1="18" x2="21" y2="18"/>
+        <rect x="3"  y="4"  width="7"  height="4" rx="1" fill="currentColor" stroke="none" opacity=".7"/>
+        <rect x="8"  y="10" width="9"  height="4" rx="1" fill="currentColor" stroke="none" opacity=".7"/>
+        <rect x="13" y="16" width="5"  height="4" rx="1" fill="currentColor" stroke="none" opacity=".7"/>
+      </svg>
+      <span>Gantt · Línea de tiempo</span>
+    </button>
+
+    <div class="nav-section-label" style="margin-top:10px;">Acciones</div>
+
+    <button class="nav-item" onclick="openAddEmployee()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <line x1="19" y1="8" x2="19" y2="14"/>
+        <line x1="16" y1="11" x2="22" y2="11"/>
+      </svg>
+      <span>Añadir empleado</span>
+    </button>
+
+    <button class="nav-item" onclick="openSettings()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      <span>Configuración</span>
+    </button>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <button class="nav-item" onclick="toggleTheme()" id="theme-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <span>Cambiar tema</span>
+    </button>
+
+    <button class="nav-item" id="install-btn" onclick="installPWA()" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 16l-4-4h3V4h2v8h3l-4 4z"/>
+        <path d="M4 20h16"/>
+      </svg>
+      <span>Instalar app</span>
+    </button>
+
+    <button class="nav-item nav-item-danger" id="logout-btn" onclick="logoutUser()" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Cerrar sesión</span>
+    </button>
   </div>
-</header>
+</aside>
 
-<main>
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-  <!-- DASHBOARD -->
-  <div class="view active" id="view-dashboard">
-    <div class="stats-bar" id="stats-bar"></div>
-    <div class="festivos-panel">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div class="section-title" style="margin-bottom:0;">🎌 Festivos marcados este año</div>
-        <button class="btn btn-ghost" style="font-size:0.78rem;padding:6px 14px;" onclick="openFestivosExcelModal()">📊 Importar Excel</button>
+<!-- ══ APP WRAPPER ════════════════════════════════════════════ -->
+<div class="app-wrapper">
+
+  <!-- Legacy header (hidden) — kept so tab-btn JS logic stays intact -->
+  <header>
+    <div class="header-right">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showView('dashboard')">Resumen</button>
+        <button class="tab-btn" onclick="showView('annual')">Anual</button>
+        <button class="tab-btn" onclick="showView('monthly')">Mensual</button>
       </div>
-      <div class="festivos-list" id="festivos-list"></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="section-title" style="margin-bottom:0;">Empleados</div>
-      <button class="btn btn-ghost" style="font-size:0.78rem;padding:6px 14px;" onclick="openSettings()">⚙️ Configurar conflictos</button>
-    </div>
-    <div class="employees-grid" id="employees-grid"></div>
-  </div>
+  </header>
 
-  <!-- ANNUAL -->
-  <div class="view" id="view-annual">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
-      <div class="year-nav">
-        <button onclick="changeYear(-1)">‹</button>
-        <h2 id="year-label">2026</h2>
-        <button onclick="changeYear(1)">›</button>
-      </div>
-      <div class="filter-pills" id="filter-pills"></div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-import" onclick="openImportModal()">⬆ Importar vacaciones</button>
-        <button class="btn btn-pdf" onclick="openPdfModal()">⬇ Exportar</button>
+  <!-- App header -->
+  <div class="app-header">
+    <div class="page-title-wrap">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="page-info">
+        <h1 class="page-title" id="page-title">Resumen</h1>
+        <p class="page-sub"  id="page-sub">Panel general de vacaciones</p>
       </div>
     </div>
-    <div class="legend" id="annual-legend"></div>
-    <div id="annual-conflict-banner"></div>
-    <div class="annual-grid" id="annual-grid"></div>
-  </div>
-
-  <!-- MONTHLY -->
-  <div class="view" id="view-monthly">
-    <div class="month-selector">
-      <select id="month-select" onchange="renderMonthly()"></select>
-      <select id="year-select-monthly" onchange="renderMonthly()"></select>
+    <div class="header-actions">
+      <button class="btn btn-accent" onclick="openAddEmployee()">+ Empleado</button>
     </div>
-    <div class="legend" id="monthly-legend"></div>
-    <div class="monthly-calendar" id="monthly-calendar"></div>
   </div>
 
-</main>
+  <!-- ── MAIN CONTENT ──────────────────────────────────────── -->
+  <main>
 
-<!-- Festivos Excel Modal -->
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-bar" id="stats-bar"></div>
+
+      <div class="festivos-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="section-title">🎌 Festivos marcados este año</div>
+          <button class="btn btn-ghost" style="font-size:.78rem;padding:6px 14px;" onclick="openFestivosExcelModal()">📊 Importar Excel</button>
+        </div>
+        <div class="festivos-list" id="festivos-list"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="section-title" style="margin-bottom:0;">Equipo</div>
+      </div>
+      <div class="employees-grid" id="employees-grid"></div>
+    </div>
+
+    <!-- ANNUAL -->
+    <div class="view" id="view-annual">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div class="year-nav">
+          <button onclick="changeYear(-1)">‹</button>
+          <h2 id="year-label">2026</h2>
+          <button onclick="changeYear(1)">›</button>
+        </div>
+        <div class="filter-pills" id="filter-pills"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-import" onclick="openImportModal()">⬆ Importar</button>
+          <button class="btn btn-pdf"    onclick="openPdfModal()">⬇ Exportar</button>
+        </div>
+      </div>
+      <div class="legend" id="annual-legend"></div>
+      <div id="annual-conflict-banner"></div>
+      <div class="annual-grid" id="annual-grid"></div>
+    </div>
+
+    <!-- MONTHLY -->
+    <div class="view" id="view-monthly">
+      <div class="month-selector">
+        <select id="month-select" onchange="renderMonthly()"></select>
+        <select id="year-select-monthly" onchange="renderMonthly()"></select>
+      </div>
+      <div class="legend" id="monthly-legend"></div>
+      <div class="monthly-calendar" id="monthly-calendar"></div>
+    </div>
+
+    <!-- GANTT / WALLCHART -->
+    <div class="view" id="view-gantt">
+      <div class="gantt-card">
+
+        <!-- Navegación de mes -->
+        <div class="gantt-month-nav">
+          <button onclick="changeGanttMonth(-1)">‹</button>
+          <h3 id="gantt-month-title">Junio 2026</h3>
+          <button onclick="changeGanttMonth(1)">›</button>
+        </div>
+
+        <!-- Cabecera sticky: letra + número de día -->
+        <div class="gantt-header-row">
+          <div class="g-emp-hdr">Empleado</div>
+          <div class="g-days-hdr" id="gantt-days-hdr"></div>
+        </div>
+
+        <!-- Filas de empleados -->
+        <div id="gantt-rows"></div>
+
+      </div>
+    </div>
+
+  </main>
+</div><!-- /.app-wrapper -->
+
+
+<!-- ══ MODALS ════════════════════════════════════════════════ -->
+
+<!-- Festivos Excel -->
 <div class="overlay" id="festivos-excel-modal">
   <div class="modal" style="width:500px;">
     <h3>🎌 Importar festivos desde Excel</h3>
-    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Sube un archivo Excel (.xlsx) con las fechas de los días festivos. Se detectan automáticamente y se guardan en la base de datos.</p>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">Sube un archivo Excel (.xlsx) con fechas de días festivos. Se detectan automáticamente.</p>
     <div class="form-group">
       <label>Año</label>
       <select id="festivos-excel-year"></select>
@@ -111,14 +261,14 @@
     <div class="drop-zone" id="festivos-drop-zone">
       <input type="file" id="festivos-excel-file" accept=".xlsx,.xls,.ods" onchange="handleFestivosFile(event)">
       <div class="dz-icon">📊</div>
-      <div class="dz-text">Arrastra aquí el archivo Excel<br><span style="color:#7ec8e3">o haz clic para seleccionar</span></div>
+      <div class="dz-text">Arrastra aquí el archivo Excel<br><span style="color:#93c5fd">o haz clic para seleccionar</span></div>
       <div class="dz-file" id="festivos-dz-filename"></div>
     </div>
     <div id="festivos-excel-preview" style="display:none;margin-top:14px;">
-      <div id="festivos-preview-list" style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px 12px;"></div>
+      <div id="festivos-preview-list" style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:8px 12px;"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
         <input type="checkbox" id="festivos-replace-check" style="width:auto;cursor:pointer;">
-        <label for="festivos-replace-check" style="margin:0;font-size:0.82rem;cursor:pointer;">Reemplazar festivos existentes de ese año</label>
+        <label for="festivos-replace-check" style="margin:0;font-size:.82rem;cursor:pointer;">Reemplazar festivos existentes de ese año</label>
       </div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
@@ -128,43 +278,39 @@
   </div>
 </div>
 
-<!-- Import Modal -->
+<!-- Import vacaciones -->
 <div class="overlay" id="import-modal">
   <div class="modal" style="width:500px;">
     <h3>⬆ Importar vacaciones con IA</h3>
-    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Sube el PDF generado por esta app. Se leerán las fechas automáticamente sin necesidad de internet.</p>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">Sube el PDF generado por esta app. Las fechas se leen automáticamente.</p>
 
-    <!-- Step 1: Upload -->
     <div id="import-step-1">
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="import-file" accept=".pdf,.png,.jpg,.jpeg,.webp" onchange="handleImportFile(event)">
         <div class="dz-icon">📄</div>
-        <div class="dz-text">Arrastra aquí el PDF o imagen<br><span style="color:#7ec8e3">o haz clic para seleccionar</span></div>
+        <div class="dz-text">Arrastra aquí el PDF o imagen<br><span style="color:#93c5fd">o haz clic para seleccionar</span></div>
         <div class="dz-file" id="dz-filename"></div>
       </div>
       <div class="form-group">
         <label>Año de las vacaciones</label>
         <select id="import-year"></select>
       </div>
-
-      <div style="border:1px solid rgba(255,80,80,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px;background:rgba(255,60,60,.05);">
-        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:700;">🗑 Borrar datos importados</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;">Elimina todos los días de vacaciones del año seleccionado de un empleado concreto o de todos.</div>
+      <div style="border:1px solid rgba(255,80,80,.22);border-radius:11px;padding:12px 14px;margin-bottom:14px;background:rgba(255,60,60,.04);">
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:700;">🗑 Borrar datos importados</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Elimina todos los días de vacaciones del año seleccionado.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <select id="clear-emp-select" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:0.8rem;outline:none;">
+          <select id="clear-emp-select" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:.8rem;outline:none;">
             <option value="all">— Todos los empleados —</option>
           </select>
-          <button class="btn" style="background:rgba(255,60,60,.15);color:#ff7070;border:1px solid rgba(255,60,60,.3);padding:7px 14px;font-size:0.8rem;" onclick="clearImportedDays()">🗑 Borrar</button>
+          <button class="btn" style="background:rgba(255,60,60,.12);color:#f87171;border:1px solid rgba(255,60,60,.28);padding:7px 14px;font-size:.8rem;" onclick="clearImportedDays()">🗑 Borrar</button>
         </div>
       </div>
-
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeModal('import-modal')">Cancelar</button>
         <button class="btn btn-import" id="import-analyze-btn" onclick="analyzeDocument()" disabled>🔍 Analizar documento</button>
       </div>
     </div>
 
-    <!-- Step 2: AI thinking -->
     <div id="import-step-2" style="display:none;">
       <div class="ai-thinking">
         <div class="ai-spinner"></div>
@@ -172,7 +318,6 @@
       </div>
     </div>
 
-    <!-- Step 3: Preview & confirm -->
     <div id="import-step-3" style="display:none;">
       <div id="import-emp-matching"></div>
       <div class="import-preview" id="import-preview"></div>
@@ -182,22 +327,21 @@
       </div>
     </div>
 
-    <!-- Step 4: Error -->
     <div id="import-step-4" style="display:none;">
       <div style="text-align:center;padding:20px;">
         <div style="font-size:2rem;margin-bottom:10px;">⚠️</div>
-        <div id="import-error-text" style="color:var(--muted);font-size:0.85rem;margin-bottom:16px;"></div>
+        <div id="import-error-text" style="color:var(--muted);font-size:.85rem;margin-bottom:16px;"></div>
         <button class="btn btn-ghost" onclick="resetImport()">Intentar de nuevo</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PDF Export Modal -->
+<!-- PDF / ICS Export -->
 <div class="overlay" id="pdf-modal">
   <div class="modal">
     <h3>⬇ Exportar</h3>
-    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;">Genera un PDF o expórtalo a Google Calendar.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:18px;">Genera un PDF o expórtalo a Google Calendar.</p>
     <div class="form-group">
       <label>Empleado</label>
       <select id="pdf-emp-select">
@@ -208,21 +352,21 @@
       <label>Año</label>
       <select id="pdf-year-select"></select>
     </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:6px;">
-      <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:700;">Formato de exportación</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:6px;">
+      <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:700;">Formato</div>
       <div style="display:flex;gap:8px;flex-direction:column;">
         <button class="btn btn-pdf" style="width:100%;justify-content:flex-start;display:flex;align-items:center;gap:10px;" onclick="generatePDF()" id="pdf-generate-btn">
           <span style="font-size:1.1rem;">📄</span>
           <div style="text-align:left;">
             <div style="font-weight:700;">Exportar PDF</div>
-            <div style="font-size:0.72rem;opacity:.8;">Calendario visual 2 meses por hoja</div>
+            <div style="font-size:.72rem;opacity:.8;">Calendario visual · 2 meses por hoja</div>
           </div>
         </button>
         <button class="btn" style="width:100%;justify-content:flex-start;display:flex;align-items:center;gap:10px;background:#1a73e8;color:#fff;" onclick="generateICS()" id="ics-generate-btn">
           <span style="font-size:1.1rem;">📅</span>
           <div style="text-align:left;">
             <div style="font-weight:700;">Exportar a Google Calendar (.ics)</div>
-            <div style="font-size:0.72rem;opacity:.8;">Importa directamente en Google, Apple u Outlook</div>
+            <div style="font-size:.72rem;opacity:.8;">Importa en Google, Apple u Outlook</div>
           </div>
         </button>
       </div>
@@ -244,10 +388,10 @@
     <div class="form-group">
       <label>Cargo / Puesto</label>
       <div style="display:flex;gap:8px;">
-        <select id="emp-role-select" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;" onchange="onRoleSelectChange()"></select>
-        <button type="button" class="btn btn-ghost" style="padding:8px 12px;font-size:0.8rem;white-space:nowrap;" onclick="addCustomRole()" title="Añadir puesto nuevo">+ Nuevo</button>
+        <select id="emp-role-select" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;" onchange="onRoleSelectChange()"></select>
+        <button type="button" class="btn btn-ghost" style="padding:8px 12px;font-size:.8rem;white-space:nowrap;" onclick="addCustomRole()" title="Añadir puesto nuevo">+ Nuevo</button>
       </div>
-      <input type="text" id="emp-role-custom" placeholder="Escribe el nuevo puesto..." style="display:none;margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--accent);color:var(--text);padding:10px 13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+      <input type="text" id="emp-role-custom" placeholder="Escribe el nuevo puesto..." style="display:none;margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--accent);color:var(--text);padding:10px 13px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;">
     </div>
     <div class="form-group">
       <label>Días de vacaciones anuales</label>
@@ -255,8 +399,8 @@
     </div>
     <div class="form-group">
       <label>Cumpleaños 🎂</label>
-      <input type="date" id="emp-birthday" placeholder="DD/MM">
-      <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Se mostrará cada año en el calendario</div>
+      <input type="date" id="emp-birthday">
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">Se mostrará cada año en el calendario</div>
     </div>
     <div class="form-group">
       <label>Color</label>
@@ -292,23 +436,22 @@
   <div class="modal" style="width:480px;">
     <h3>⚙️ Configuración</h3>
 
-    <!-- Theme Selector -->
     <div class="form-group" style="margin-bottom:20px;">
       <label>🎨 Tema de la aplicación</label>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">
         <div class="theme-card" id="tc-dark" onclick="setTheme('dark')">
-          <div style="background:#0f0f13;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;">
-            <div style="background:#1a1a22;height:10px;border-radius:3px;"></div>
+          <div style="background:#0c0e1b;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;">
+            <div style="background:#1c2138;height:10px;border-radius:3px;"></div>
             <div style="background:#f5a623;height:6px;border-radius:2px;width:55%;"></div>
-            <div style="background:#2e2e3e;height:6px;border-radius:2px;width:80%;"></div>
+            <div style="background:#252d47;height:6px;border-radius:2px;width:80%;"></div>
           </div>
           <div class="theme-card-label">🌙 Oscuro</div>
         </div>
         <div class="theme-card" id="tc-light" onclick="setTheme('light')">
-          <div style="background:#f4f4f8;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;">
-            <div style="background:#ffffff;height:10px;border-radius:3px;border:1px solid #d0d0e0;"></div>
-            <div style="background:#e0920a;height:6px;border-radius:2px;width:55%;"></div>
-            <div style="background:#d0d0e0;height:6px;border-radius:2px;width:80%;"></div>
+          <div style="background:#eef1f8;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;">
+            <div style="background:#ffffff;height:10px;border-radius:3px;border:1px solid #dbe1ef;"></div>
+            <div style="background:#4f46e5;height:6px;border-radius:2px;width:55%;"></div>
+            <div style="background:#dbe1ef;height:6px;border-radius:2px;width:80%;"></div>
           </div>
           <div class="theme-card-label">☀️ Claro</div>
         </div>
@@ -327,32 +470,30 @@
     <h3 style="font-size:1rem;margin-bottom:14px;">Conflictos</h3>
 
     <div class="form-group">
-      <label>¿Cuántos empleados del <strong>mismo puesto</strong> generan conflicto?</label>
-      <select id="thresh-same-role" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      <label>¿Cuántos del <strong>mismo puesto</strong> generan conflicto?</label>
+      <select id="thresh-same-role" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;">
         <option value="2">2 o más del mismo puesto</option>
         <option value="3">3 o más del mismo puesto</option>
         <option value="4">4 o más del mismo puesto</option>
         <option value="99">Nunca (desactivar)</option>
       </select>
-      <div style="font-size:0.74rem;color:var(--muted);margin-top:5px;">Ej: 2 Pikers el mismo día = conflicto</div>
     </div>
 
     <div class="form-group" style="margin-top:14px;">
-      <label>¿Cuántos empleados en total (cualquier puesto) generan conflicto?</label>
-      <select id="thresh-total" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      <label>¿Cuántos en total (cualquier puesto) generan conflicto?</label>
+      <select id="thresh-total" style="margin-top:8px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;">
         <option value="99">Nunca (desactivar)</option>
         <option value="2">2 o más en total</option>
         <option value="3">3 o más en total</option>
         <option value="4">4 o más en total</option>
         <option value="5">5 o más en total</option>
       </select>
-      <div style="font-size:0.74rem;color:var(--muted);margin-top:5px;">Ej: 3 empleados de cualquier puesto el mismo día = conflicto</div>
     </div>
 
     <div class="form-group" style="margin-top:18px;">
       <label>Puestos compatibles (no generan conflicto entre sí)</label>
       <div id="compat-pairs-list" style="margin-top:8px;display:flex;flex-direction:column;gap:6px;"></div>
-      <button class="btn btn-ghost" style="margin-top:10px;font-size:0.78rem;" onclick="addCompatPair()">+ Añadir par compatible</button>
+      <button class="btn btn-ghost" style="margin-top:10px;font-size:.78rem;" onclick="addCompatPair()">+ Añadir par compatible</button>
     </div>
 
     <div class="form-group" style="margin-top:18px;">
@@ -367,24 +508,26 @@
   </div>
 </div>
 
+<!-- Toast & Indicators -->
 <div class="toast" id="toast"></div>
-<div id="sync-indicator" style="position:fixed;bottom:70px;right:16px;background:#2d6a4f;color:#fff;padding:6px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;z-index:9999;display:none;align-items:center;gap:6px;">
+<div id="sync-indicator" style="position:fixed;bottom:70px;right:16px;background:#166534;color:#86efac;padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:600;z-index:9999;display:none;align-items:center;gap:6px;">
   <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 1s infinite;"></div>
   <span id="sync-text">Sincronizando...</span>
 </div>
 
-<!-- Firebase diagnostic panel -->
-<div id="firebase-diag" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1a1a22;border:1px solid #2e2e3e;border-radius:12px;padding:10px 16px;font-size:0.75rem;z-index:9998;text-align:center;min-width:220px;">
-  <div id="diag-text" style="color:#7070a0;">🔄 Iniciando Firebase...</div>
-  <button onclick="document.getElementById('firebase-diag').style.display='none'" style="margin-top:6px;background:none;border:none;color:#7070a0;font-size:0.7rem;cursor:pointer;">Ocultar</button>
+<!-- Firebase diagnostic -->
+<div id="firebase-diag" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:.75rem;z-index:9998;text-align:center;min-width:220px;">
+  <div id="diag-text" style="color:var(--muted);">🔄 Iniciando Firebase...</div>
+  <button onclick="document.getElementById('firebase-diag').style.display='none'" style="margin-top:6px;background:none;border:none;color:var(--muted);font-size:.7rem;cursor:pointer;">Ocultar</button>
 </div>
 
-<!-- ── Módulos JS (orden importante) ── -->
+<!-- ── Módulos JS ── -->
 <script src="state.js"></script>
 <script src="firebase.js"></script>
 <script src="calendar.js"></script>
 <script src="employees.js"></script>
 <script src="export-import.js"></script>
+<script src="gantt.js"></script>
 
 <!-- ── Init ── -->
 <script>
@@ -397,7 +540,7 @@ applyTheme();
 initMonthlySelects();
 renderDashboard();
 
-// ── SERVICE WORKER ────────────────────────────────────────────
+// SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js')
@@ -406,23 +549,20 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ── PWA INSTALL PROMPT ────────────────────────────────────────
+// PWA INSTALL PROMPT
 let _installPrompt = null;
-
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _installPrompt = e;
   const btn = document.getElementById('install-btn');
   if (btn) btn.style.display = 'flex';
 });
-
 window.addEventListener('appinstalled', () => {
   _installPrompt = null;
   const btn = document.getElementById('install-btn');
   if (btn) btn.style.display = 'none';
   if (window.showToast) showToast('✅ App instalada correctamente');
 });
-
 function installPWA() {
   if (!_installPrompt) return;
   _installPrompt.prompt();

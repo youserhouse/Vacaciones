@@ -183,16 +183,21 @@ function applyTheme() {
   const t = state.theme || 'dark';
   document.body.classList.remove('light', 'mecafilter');
   if (t !== 'dark') document.body.classList.add(t);
+
   const btn = document.getElementById('theme-btn');
   if (btn) {
     const labels = { dark: '☀️ Claro', light: '🟢 Meca', mecafilter: '🌙 Oscuro' };
-    btn.textContent = labels[t] || '☀️ Claro';
+    const span = btn.querySelector('span');
+    if (span) span.textContent = labels[t] || '☀️ Claro';
+    else btn.textContent = labels[t] || '☀️ Claro';
   }
+
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    const colors = { dark: '#f5a623', light: '#e0920a', mecafilter: '#509E48' };
+    const colors = { dark: '#f5a623', light: '#4f46e5', mecafilter: '#509E48' };
     meta.content = colors[t] || '#f5a623';
   }
+
   ['dark', 'light', 'mecafilter'].forEach(n => {
     const c = document.getElementById('tc-' + n);
     if (c) c.classList.toggle('active', n === t);
@@ -201,14 +206,55 @@ function applyTheme() {
 
 // ── VIEWS ─────────────────────────────────────────────────────
 function showView(v) {
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  const idx=['dashboard','annual','monthly'].indexOf(v);
-  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-  if(v==='dashboard') renderDashboard();
-  if(v==='annual') renderAnnual();
-  if(v==='monthly') renderMonthly();
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(el => el.classList.remove('active'));
+
+  document.getElementById('view-' + v).classList.add('active');
+
+  const idx = ['dashboard', 'annual', 'monthly'].indexOf(v);
+  const tabs = document.querySelectorAll('.tab-btn');
+  if (tabs[idx]) tabs[idx].classList.add('active');
+
+  const navEl = document.getElementById('nav-' + v);
+  if (navEl) navEl.classList.add('active');
+
+  const meta = {
+    dashboard: { title: 'Resumen',              sub: 'Panel general de vacaciones' },
+    annual:    { title: 'Calendario Anual',     sub: 'Vista completa del año' },
+    monthly:   { title: 'Calendario Mensual',   sub: 'Vista mensual detallada' },
+    gantt:     { title: 'Línea de tiempo',      sub: 'Vista Gantt de vacaciones por empleado' }
+  };
+  const m = meta[v] || {};
+  const pt = document.getElementById('page-title');
+  const ps = document.getElementById('page-sub');
+  if (pt) pt.textContent = m.title || '';
+  if (ps) ps.textContent = m.sub || '';
+
+  closeSidebar();
+
+  if (v === 'dashboard') renderDashboard();
+  if (v === 'annual')    renderAnnual();
+  if (v === 'monthly')   renderMonthly();
+  if (v === 'gantt')     renderGantt();
+}
+
+// ── SIDEBAR MOBILE ────────────────────────────────────────────
+function toggleSidebar() {
+  const s = document.getElementById('app-sidebar');
+  const o = document.getElementById('sidebar-overlay');
+  const isOpen = s && s.classList.contains('open');
+  if (isOpen) { closeSidebar(); } else {
+    s && s.classList.add('open');
+    o && o.classList.add('show');
+  }
+}
+
+function closeSidebar() {
+  const s = document.getElementById('app-sidebar');
+  const o = document.getElementById('sidebar-overlay');
+  s && s.classList.remove('open');
+  o && o.classList.remove('show');
 }
 
 // ── MODAL HELPERS ─────────────────────────────────────────────
