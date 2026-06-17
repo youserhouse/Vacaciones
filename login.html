@@ -2,6 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdnjs.cloudflare.com;
+  worker-src 'self' blob: https://cdnjs.cloudflare.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com
+    https://identitytoolkit.googleapis.com https://securetoken.googleapis.com
+    https://firestore.googleapis.com;
+  img-src 'self' data: blob:;
+  frame-src https://control-vacaciones-50415.firebaseapp.com;
+">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Control de Vacaciones — Acceso</title>
 <link rel="manifest" href="manifest.json">
@@ -126,7 +138,7 @@ async function handleUser(user) {
   } else {
     await _auth.signOut();
     showLoading(false);
-    showError('❌ Acceso no autorizado para ' + user.email);
+    showError('❌ Esta cuenta no tiene acceso');
   }
 }
 
@@ -145,7 +157,7 @@ async function signInEmail() {
   const MSGS = {
     'auth/user-not-found':      'Correo o contraseña incorrectos',
     'auth/wrong-password':      'Correo o contraseña incorrectos',
-    'auth/invalid-email':       'Correo no válido',
+    'auth/invalid-email':       'Correo o contraseña incorrectos',
     'auth/invalid-credential':  'Correo o contraseña incorrectos',
     'auth/too-many-requests':   'Demasiados intentos, espera un momento',
   };

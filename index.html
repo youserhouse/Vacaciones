@@ -2,6 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<!-- ✅ SEGURIDAD: Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdnjs.cloudflare.com;
+  worker-src 'self' blob: https://cdnjs.cloudflare.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com
+    https://identitytoolkit.googleapis.com https://securetoken.googleapis.com
+    https://firestore.googleapis.com;
+  img-src 'self' data: blob:;
+  frame-src https://control-vacaciones-50415.firebaseapp.com;
+">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Control de Vacaciones 2026</title>
 
