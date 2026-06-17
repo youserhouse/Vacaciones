@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
 
+<script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -101,16 +102,8 @@ html, body {
 </div>
 
 <script>
-// ── Firebase init ─────────────────────────────────────────────
-const _cfg = {
-  apiKey: "AIzaSyA1iZHd2X0xfNNxtdg8VFPGj0gNJjO7iCI",
-  authDomain: "control-vacaciones-50415.firebaseapp.com",
-  projectId: "control-vacaciones-50415",
-  storageBucket: "control-vacaciones-50415.appspot.com",
-  messagingSenderId: "158631364453",
-  appId: "1:158631364453:web:4ed0af369aaaec0cbe838c"
-};
-firebase.initializeApp(_cfg);
+// ── Firebase init (config desde firebase-config.js) ──────────
+firebase.initializeApp(window.firebaseConfig);
 const _auth = firebase.auth();
 const _db   = firebase.firestore();
 
@@ -150,8 +143,8 @@ async function signInEmail() {
   setButtons(false);
   clearError();
   const MSGS = {
-    'auth/user-not-found':      'Correo no registrado',
-    'auth/wrong-password':      'Contraseña incorrecta',
+    'auth/user-not-found':      'Correo o contraseña incorrectos',
+    'auth/wrong-password':      'Correo o contraseña incorrectos',
     'auth/invalid-email':       'Correo no válido',
     'auth/invalid-credential':  'Correo o contraseña incorrectos',
     'auth/too-many-requests':   'Demasiados intentos, espera un momento',
