@@ -1,7 +1,7 @@
 // ── Control de Vacaciones — Service Worker ────────────────────
 // Versión de caché: cambia este número cuando actualices la app
 // para que los usuarios reciban la versión nueva automáticamente
-const CACHE_NAME = 'vacaciones-v11';
+const CACHE_NAME = 'vacaciones-v13';
 
 // Archivos que se guardan en caché para funcionar sin internet
 const ASSETS = [
@@ -13,7 +13,6 @@ const ASSETS = [
   '/Vacaciones/icon-512.png',
   '/Vacaciones/icon-maskable.png',
   '/Vacaciones/styles.css',
-  '/Vacaciones/firebase-config.js',
   '/Vacaciones/state.js',
   '/Vacaciones/firebase.js',
   '/Vacaciones/calendar.js',
@@ -66,6 +65,13 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('gstatic');
 
   if (isExternal) return;
+
+  // firebase-config.js nunca se cachea: evita que la API key quede
+  // persistida en el caché del Service Worker en equipos compartidos
+  if (url.pathname.endsWith('/firebase-config.js')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   // Para archivos propios: Network First con fallback a caché
   event.respondWith(

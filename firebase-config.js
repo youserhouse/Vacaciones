@@ -1,9 +1,12 @@
-// ── firebase-config.js ────────────────────────────────────────
-// Configuración pública de Firebase — fuente única de verdad.
-// Esta config es pública por diseño (web estática).
+// ── firebase-config.js ───────────────────────────────────────
+// Config pública de Firebase (no es secreta por diseño en apps web
+// estáticas). Compartida por index.html, login.html y splash.html
+// para evitar duplicación y desincronización al rotar claves.
+//
 // La protección real está en:
 //   1. Google Cloud Console → API Key restringida a tu dominio
 //   2. Firebase Console → Firestore → Reglas de seguridad
+// ─────────────────────────────────────────────────────────────
 window.firebaseConfig = {
   apiKey:            "AIzaSyA1iZHd2X0xfNNxtdg8VFPGj0gNJjO7iCI",
   authDomain:        "control-vacaciones-50415.firebaseapp.com",

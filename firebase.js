@@ -1,13 +1,13 @@
 // ── firebase.js ───────────────────────────────────────────────
 // Inicialización de Firebase y sincronización con Firestore
 //
-// SEGURIDAD: Esta config es pública por diseño (web estática).
-// La protección real está en:
+// SEGURIDAD: firebaseConfig se carga desde firebase-config.js
+// (compartido con login.html y splash.html). La protección real
+// está en:
 //   1. Google Cloud Console → API Key restringida a tu dominio
 //   2. Firebase Console → Firestore → Reglas de seguridad
 // ─────────────────────────────────────────────────────────────
 
-// Config cargada desde firebase-config.js (fuente única)
 try {
   firebase.initializeApp(window.firebaseConfig);
   diagMsg('✅ Firebase SDK cargado', '#4ade80');
