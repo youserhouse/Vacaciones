@@ -13,6 +13,7 @@ const ASSETS = [
   '/Vacaciones/icon-512.png',
   '/Vacaciones/icon-maskable.png',
   '/Vacaciones/styles.css',
+  '/Vacaciones/firebase-config.js',
   '/Vacaciones/state.js',
   '/Vacaciones/firebase.js',
   '/Vacaciones/calendar.js',
