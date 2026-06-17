@@ -492,6 +492,13 @@ function extractDatesFromText(text, year) {
   return [...dates].sort();
 }
 
+// ── Sanitiza cadenas antes de inyectarlas en innerHTML ────────
+function sanitizeHTML(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(String(str ?? '')));
+  return div.innerHTML;
+}
+
 function showImportPreview(parsed) {
   const uniqueNames = [...new Set(parsed.map(p => p.empleado))];
   const matchDiv = document.getElementById('import-emp-matching');
@@ -501,7 +508,7 @@ function showImportPreview(parsed) {
       const best = findBestMatch(name); const sid = sanitizeId(name);
       return `<div class="import-emp-match">
         <div class="emp-dot-sm" id="match-dot-${sid}" style="background:${best?.color||'#888'}"></div>
-        <label><strong>${name}</strong></label>
+        <label><strong>${sanitizeHTML(name)}</strong></label>
         <select id="match-${sid}" onchange="updateMatchDot('${sid}')">
           <option value="">— Ignorar —</option>
           ${state.employees.map(e=>`<option value="${e.id}" ${best?.id==e.id?'selected':''}>${e.name}</option>`).join('')}
@@ -516,7 +523,7 @@ function showImportPreview(parsed) {
     allDays.map(({date,emp})=>{
       const pts=date.split('-');
       const label=pts.length===3?`${parseInt(pts[2])} ${MONTHS[parseInt(pts[1])-1]} ${pts[0]}`:date;
-      return `<div class="import-day-row"><span class="idr-date">${label}</span><span class="idr-emp">${emp}</span></div>`;
+      return `<div class="import-day-row"><span class="idr-date">${label}</span><span class="idr-emp">${sanitizeHTML(emp)}</span></div>`;
     }).join('');
 }
 
